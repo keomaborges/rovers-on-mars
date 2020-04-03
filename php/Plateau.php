@@ -4,12 +4,12 @@ class Plateau
 {
     protected int $x;
     protected int $y;
-    
+
     /**
-     * Undocumented function
+     * Plateau constructor.
      *
-     * @param integer $x
-     * @param integer $y
+     * @param int $x
+     * @param int $y
      */
     public function __construct(int $x, int $y)
     {
@@ -18,19 +18,21 @@ class Plateau
     }
 
     /**
-     * Undocumented function
-     *
-     * @param integer $x
-     * @param integer $y
-     * @return boolean
+     * @param string $separator
+     * @return string
+     */
+    public function getSize(string $separator = ','): string
+    {
+        return $this->x . $separator . $this->y;
+    }
+
+    /**
+     * @param int $x
+     * @param int $y
+     * @return bool
      */
     public function isValidPosition(int $x, int $y): bool
     {
         return ($this->x <= $x) && ($this->y <= $y);
-    }
-
-    public function getSize(string $separator = ','): string
-    {
-        return $this->x . $separator . $this->y;
     }
 }

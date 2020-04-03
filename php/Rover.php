@@ -4,43 +4,57 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'Plateau.php';
 
 class Rover
 {
+    protected int $orientation;
+    protected Plateau $plateau;
     protected int $x;
     protected int $y;
-    protected Plateau $plateau;
-    protected int $orientation;
 
     /**
-     * Undocumented function
+     * Rover constructor.
      *
      * @param Plateau $plateau
-     * @param integer $x
-     * @param integer $y
+     * @param int     $x
+     * @param int     $y
      */
-    public function __construct(Plateau $plateau, int $x, int $y, string $orientation)
+    public function __construct(Plateau $plateau, int $x, int $y)
     {
         $this->plateau = $plateau;
         $this->x = $x;
         $this->y = $y;
-        $this->orientation = $this->setOrientation($orientation);
 
         //TODO: verify initial position is valid
     }
 
-    public function turnLeft()
+    /**
+     * @param string $separator
+     * @return string
+     */
+    public function getCurrentCoordinates(string $separator = ','): string
     {
-        if (--$this->orientation < 1) {
-            $this->orientation = 4;
+        return $this->x . $separator . $this->y;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrientation(): string
+    {
+        switch ($this->orientation) {
+            case 1:
+                return 'N';
+            case 2:
+                return 'E';
+            case 3:
+                return 'S';
+            case 4:
+                return 'W';
         }
     }
 
-    public function turnRight(): void
-    {
-        if (++$this->orientation > 4) {
-            $this->orientation = 1;
-        }
-    }
-
-    public function move()
+    /**
+     *
+     */
+    public function move(): void
     {
         switch ($this->orientation) {
             case 1:
@@ -58,45 +72,47 @@ class Rover
         }
     }
 
-    public function getCurrentCoordinates(string $separator = ','): string
-    {
-        return $this->x . $separator . $this->y;
-    }
-
     /**
-     * Undocumented function
-     *
      * @param string $orientation
-     * @return integer
-     * @throws Exception 
+     * @throws Exception
      */
-    public function setOrientation(string $orientation): int
+    public function setOrientation(string $orientation): void
     {
         switch (strtoupper($orientation)) {
             case 'N':
-                return 1;
+                $this->orientation = 1;
+                break;
             case 'E':
-                return 2;
+                $this->orientation = 2;
+                break;
             case 'S':
-                return 3;
+                $this->orientation = 3;
+                break;
             case 'W':
-                return 4;
+                $this->orientation = 4;
+                break;
             default:
                 throw new \Exception('Invalid orientation provided. Valid values: N, E, S, W.');
         }
     }
 
-    public function getOrientation()
+    /**
+     *
+     */
+    public function turnLeft(): void
     {
-        switch ($this->orientation) {
-            case 1:
-                return 'N';
-            case 2:
-                return 'E';
-            case 3:
-                return 'S';
-            case 4:
-                return 'W';
+        if (--$this->orientation < 1) {
+            $this->orientation = 4;
+        }
+    }
+
+    /**
+     *
+     */
+    public function turnRight(): void
+    {
+        if (++$this->orientation > 4) {
+            $this->orientation = 1;
         }
     }
 }
