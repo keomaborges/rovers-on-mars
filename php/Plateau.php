@@ -1,7 +1,5 @@
 <?php
 
-namespace App\PHP;
-
 class Plateau
 {
     protected int $x;
@@ -29,5 +27,10 @@ class Plateau
     public function isValidPosition(int $x, int $y): bool
     {
         return ($this->x <= $x) && ($this->y <= $y);
+    }
+
+    public function getSize(string $separator = ','): string
+    {
+        return $this->x . $separator . $this->y;
     }
 }

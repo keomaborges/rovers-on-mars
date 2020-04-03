@@ -1,8 +1,6 @@
 <?php
 
-namespace App\PHP;
-
-use App\PHP\Plateau;
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'Plateau.php';
 
 class Rover
 {
@@ -24,6 +22,8 @@ class Rover
         $this->x = $x;
         $this->y = $y;
         $this->orientation = $this->setOrientation($orientation);
+
+        //TODO: verify initial position is valid
     }
 
     public function turnLeft()
@@ -42,7 +42,25 @@ class Rover
 
     public function move()
     {
-        # code...
+        switch ($this->orientation) {
+            case 1:
+                $this->y++;
+                break;
+            case 2:
+                $this->x++;
+                break;
+            case 3:
+                $this->y--;
+                break;
+            case 4:
+                $this->x--;
+            break;
+        }
+    }
+
+    public function getCurrentCoordinates(string $separator = ','): string
+    {
+        return $this->x . $separator . $this->y;
     }
 
     /**
