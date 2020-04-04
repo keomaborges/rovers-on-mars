@@ -4,6 +4,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'Plateau.php';
 
 class Rover
 {
+    protected string $id;
     protected int $orientation;
     protected Plateau $plateau;
     protected int $x;
@@ -13,18 +14,32 @@ class Rover
      * Rover constructor.
      *
      * @param Plateau $plateau
-     * @param int     $x
-     * @param int     $y
      */
-    public function __construct(Plateau $plateau, int $x, int $y)
+    public function __construct(Plateau $plateau)
     {
         $this->plateau = $plateau;
+        $this->id = uniqid();
+    }
+
+    /**
+     * @param int $x
+     * @param int $y
+     * @throws Exception
+     */
+    public function setCoordinates(int $x, int $y)
+    {
         $this->x = $x;
         $this->y = $y;
 
-        //TODO: verify initial position is valid
+        if ($at = $this->plateau->checkCrash($this)) {
+            throw new \Exception(
+                sprintf(
+                    'You launched this rover upon another one at %s. Now both are dead as we can not fix them.',
+                    $at
+                )
+            );
+        }
     }
-
     /**
      * @param string $separator
      * @return string
@@ -32,6 +47,14 @@ class Rover
     public function getCurrentCoordinates(string $separator = ','): string
     {
         return $this->x . $separator . $this->y;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     /**
@@ -52,7 +75,7 @@ class Rover
     }
 
     /**
-     *
+     * @throws Exception
      */
     public function move(): void
     {
@@ -69,6 +92,15 @@ class Rover
             case 4:
                 $this->x--;
             break;
+        }
+
+        if ($at = $this->plateau->checkCrash($this)) {
+            throw new \Exception(
+                sprintf(
+                    'You crashed with another rover at %s. Now both are dead as we can not fix them.',
+                    $at
+                )
+            );
         }
     }
 
