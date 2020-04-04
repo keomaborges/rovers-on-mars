@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'Rover.php';
+namespace App;
 
 /**
  * Class Script
@@ -183,7 +183,7 @@ class Script
 
         echo "Inform movement instructions for the rover: ";
         $movements = readline();
-        foreach(str_split($movements) as $movement) {
+        foreach (str_split($movements) as $movement) {
             switch (strtoupper($movement)) {
                 case 'L':
                     $this->currentRover->turnLeft();
@@ -206,7 +206,7 @@ class Script
                         $this->menu();
                     } catch (InvalidPositionException $exception) {
                         echo sprintf(
-                            'This rover tried to move to %s, which is an invalid position. '.
+                            'This rover tried to move to %s, which is an invalid position. ' .
                             'At the moment it is at %s and will try to follow your instructions.',
                             $exception->getInvalidCoordinates(),
                             $this->currentRover->getCurrentCoordinates()
@@ -252,6 +252,3 @@ class Script
         $this->menu();
     }
 }
-
-$script = new Script();
-$script->createPlateau();

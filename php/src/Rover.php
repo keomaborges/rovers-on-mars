@@ -1,8 +1,9 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'Plateau.php';
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'CrashException.php';
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'InvalidPositionException.php';
+namespace App;
+
+use App\Exceptions\CrashException;
+use App\Exceptions\InvalidPositionException;
 
 /**
  * Defines a rover.
@@ -14,7 +15,7 @@ class Rover
     /**
      * Valid orientations
      */
-    const VALID_ORIENTATIONS = ['N', 'E', 'S', 'W'];
+    public const VALID_ORIENTATIONS = ['N', 'E', 'S', 'W'];
 
     /**
      * The ID in here there's no real meaning. It's an unique identifier to
@@ -70,7 +71,7 @@ class Rover
         $this->y = $y;
 
         if ($at = $this->plateau->checkCrash($this)) {
-            throw new \CrashException($at);
+            throw new CrashException($at);
         }
     }
     /**
@@ -104,7 +105,7 @@ class Rover
                 return 'E';
             case 3:
                 return 'S';
-            case 4:
+            default:
                 return 'W';
         }
     }
@@ -133,7 +134,7 @@ class Rover
                 break;
             case 4:
                 $this->x--;
-            break;
+                break;
         }
 
         /**
@@ -162,7 +163,7 @@ class Rover
      * Sets the orientation based to the "humanized" format.
      *
      * @param string $orientation the desired orientation
-     * @throws Exception if it was provided an invalid orientation
+     * @throws \Exception if it was provided an invalid orientation
      */
     public function setOrientation(string $orientation): void
     {

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Exceptions;
+
 /**
  * This exception is thrown when a rover tries to move to a invalid position
  * on the plateau.
@@ -47,4 +49,3 @@ class InvalidPositionException extends \Exception
         return $this->invalidX . ',' . $this->invalidY;
     }
 }
-

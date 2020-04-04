@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Exceptions;
+
 /**
  * This exception is thrown when a rover crashes to another on the same plateau.
  *
