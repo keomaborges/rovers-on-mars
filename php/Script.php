@@ -2,11 +2,23 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'Rover.php';
 
+/**
+ * Class Script
+ */
 class Script
 {
+    /**
+     * @var Rover|null
+     */
     protected ?Rover $currentRover;
+    /**
+     * @var Plateau|null
+     */
     protected ?Plateau $plateau;
 
+    /**
+     * Script constructor.
+     */
     public function __construct()
     {
         $this->plateau = null;
@@ -17,6 +29,9 @@ class Script
         echo "\n\n";
     }
 
+    /**
+     *
+     */
     public function createPlateau()
     {
         echo "\n\n";
@@ -24,6 +39,17 @@ class Script
         echo "Inform the size of the plateau (two integers separated by space): ";
 
         $positions = explode(' ', readline());
+        if (
+            sizeof($positions) !== 2
+            || !is_numeric($positions[0])
+            || !is_numeric($positions[1])
+        ) {
+            echo "\n\n";
+            echo "Invalid input";
+            $this->createPlateau();
+        }
+
+
         $plateau = new Plateau($positions[0], $positions[1]);
 
         echo "\n";
@@ -34,6 +60,9 @@ class Script
         $this->createRover();
     }
 
+    /**
+     *
+     */
     public function createRover()
     {
         echo "\n\n";
@@ -41,12 +70,30 @@ class Script
         echo 'Inform the coordinates of the rover and its orientation (e.g. 2 3 E): ';
 
         $roverInfo = explode(' ', readline());
+        if (
+            sizeof($roverInfo) !== 3
+            || !is_numeric($roverInfo[0])
+            || !is_numeric($roverInfo[1])
+            || !in_array(strtoupper($roverInfo[2]), Rover::VALID_ORIENTATIONS)
+        ) {
+            echo "\n\n";
+            echo "Invalid input";
+            $this->createRover();
+        }
+
+
         $rover = new Rover($this->plateau);
 
         try {
             $rover->setCoordinates($roverInfo[0], $roverInfo[1]);
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
+        } catch (\CrashException $exception) {
+            $this->currentRover = null;
+
+            echo "\n";
+            echo sprintf(
+                'You launched this rover upon another one at %s. Now both are dead as we can not fix them.',
+                $exception->getCoordinates()
+            );
 
             $this->menu();
         }
@@ -70,6 +117,9 @@ class Script
         $this->operateRover();
     }
 
+    /**
+     *
+     */
     public function menu()
     {
         echo "\n\n";
@@ -90,28 +140,46 @@ class Script
 
         $option = readline();
 
-        switch ($option) {
-            case '1':
-                $this->operateRover();
-                break;
-            case '2':
-                $this->createRover();
-                break;
-            case '3':
-                $this->showRovers();
-                break;
-            case '4':
-                $this->createPlateau();
-                break;
-            default:
-                echo "Bye!";
-                exit;
+        try {
+            switch ($option) {
+                case '1':
+                    $this->operateRover();
+                    break;
+                case '2':
+                    $this->createRover();
+                    break;
+                case '3':
+                    $this->showRovers();
+                    break;
+                case '4':
+                    $this->createPlateau();
+                    break;
+                default:
+                    echo "Bye!";
+                    exit;
+            }
+        } catch (\Throwable $exception) {
+            echo "\n\n";
+
+            echo $exception->getMessage();
+
+            echo "\n\n";
+            echo "Bye!";
+            exit;
         }
     }
 
+    /**
+     *
+     */
     public function operateRover()
     {
         echo "\n\n";
+
+        if (is_null($this->currentRover)) {
+            echo "There is no rover set.";
+            $this->menu();
+        }
 
         echo "Inform movement instructions for the rover: ";
         $movements = readline();
@@ -126,10 +194,28 @@ class Script
                 case 'M':
                     try {
                         $this->currentRover->move();
-                    } catch (\Exception $exception) {
-                        echo $exception->getMessage();
+                    } catch (CrashException $exception) {
+                        $this->currentRover = null;
+
+                        echo "\n";
+                        echo sprintf(
+                            'This rover crashed to another at %s. Now both are dead as we can not fix them.',
+                            $exception->getCoordinates()
+                        );
+
+                        $this->menu();
+                    } catch (InvalidPositionException $exception) {
+                        echo sprintf(
+                            'This rover tried to move to %s, which is an invalid position. '.
+                            'At the moment it is at %s and will try to follow your instructions.',
+                            $exception->getInvalidCoordinates(),
+                            $this->currentRover->getCurrentCoordinates()
+                        );
+                        echo "\n";
                     }
                     break;
+
+                // Invalid commands are ignored in here.
             }
         }
 
@@ -143,6 +229,9 @@ class Script
         $this->menu();
     }
 
+    /**
+     *
+     */
     public function showRovers()
     {
         echo "\n\n";

@@ -1,12 +1,21 @@
 <?php
 
+/**
+ * Class Plateau
+ */
 class Plateau
 {
     /**
      * @var Rover[]
      */
     protected array $rovers;
+    /**
+     * @var int
+     */
     protected int $x;
+    /**
+     * @var int
+     */
     protected int $y;
 
     /**
@@ -22,11 +31,18 @@ class Plateau
         $this->rovers = [];
     }
 
+    /**
+     * @param Rover $rover
+     */
     public function addRover(Rover $rover)
     {
         $this->rovers[] = $rover;
     }
 
+    /**
+     * @param Rover $movingRover
+     * @return bool|string
+     */
     public function checkCrash(Rover $movingRover)
     {
         foreach ($this->rovers as $i => $rover) {
@@ -44,6 +60,9 @@ class Plateau
         return false;
     }
 
+    /**
+     * @return array
+     */
     public function getRovers(): array
     {
         return $this->rovers;
@@ -65,9 +84,12 @@ class Plateau
      */
     public function isValidPosition(int $x, int $y): bool
     {
-        return ($this->x <= $x) && ($this->y <= $y);
+        return ($x <= $this->x) && ($y <= $this->y);
     }
 
+    /**
+     * @param Rover $rover
+     */
     public function removeRover(Rover $rover)
     {
         foreach ($this->rovers as $i => $currentRover) {

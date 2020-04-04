@@ -1,13 +1,48 @@
 <?php
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'Plateau.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'CrashException.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'InvalidPositionException.php';
 
+/**
+ * Defines a rover.
+ *
+ * Class Rover
+ */
 class Rover
 {
+    /**
+     * Valid orientations
+     */
+    const VALID_ORIENTATIONS = ['N', 'E', 'S', 'W'];
+
+    /**
+     * The ID in here there's no real meaning. It's an unique identifier to
+     * identify different rovers on the same plateau.
+     *
+     * @var string
+     */
     protected string $id;
+    /**
+     * In the code logic, the orientation is set as an integer value to make
+     * it calculable.
+     *
+     * @var int
+     */
     protected int $orientation;
+    /**
+     * A rover must be on a plateau.
+     *
+     * @var Plateau
+     */
     protected Plateau $plateau;
+    /**
+     * @var int
+     */
     protected int $x;
+    /**
+     * @var int
+     */
     protected int $y;
 
     /**
@@ -22,9 +57,12 @@ class Rover
     }
 
     /**
-     * @param int $x
-     * @param int $y
-     * @throws Exception
+     * Sets the coordinates of the rover.
+     *
+     * @param int $x the position on axis X
+     * @param int $y the position on axis Y
+     * @throws CrashException if the rover is launched upon another one
+     *                        at the same position
      */
     public function setCoordinates(int $x, int $y)
     {
@@ -32,17 +70,14 @@ class Rover
         $this->y = $y;
 
         if ($at = $this->plateau->checkCrash($this)) {
-            throw new \Exception(
-                sprintf(
-                    'You launched this rover upon another one at %s. Now both are dead as we can not fix them.',
-                    $at
-                )
-            );
+            throw new \CrashException($at);
         }
     }
     /**
-     * @param string $separator
-     * @return string
+     * Returns the current coordinates
+     *
+     * @param string $separator defaults to ','
+     * @return string the current coordinates separated by the parameter
      */
     public function getCurrentCoordinates(string $separator = ','): string
     {
@@ -50,7 +85,7 @@ class Rover
     }
 
     /**
-     * @return string
+     * @return string the current ID
      */
     public function getId(): string
     {
@@ -58,7 +93,7 @@ class Rover
     }
 
     /**
-     * @return string
+     * @return string the "humanized" orientation
      */
     public function getOrientation(): string
     {
@@ -75,10 +110,17 @@ class Rover
     }
 
     /**
-     * @throws Exception
+     * Move this rover in the direction that it points to.
+     *
+     * @throws CrashException if the rover crashes to another
+     * @throws InvalidPositionException if the rover tries to go to an invalid
+     *                                  position on the plateau
      */
     public function move(): void
     {
+        $previousX = $this->x;
+        $previousY = $this->y;
+
         switch ($this->orientation) {
             case 1:
                 $this->y++;
@@ -94,19 +136,33 @@ class Rover
             break;
         }
 
+        /**
+         * If the position is invalid, the rover gets back to the previous
+         * position and an exception is thrown.
+         */
+        if (!($at = $this->plateau->isValidPosition($this->x, $this->y))) {
+            $invalidX = $this->x;
+            $invalidY = $this->y;
+
+            $this->x = $previousX;
+            $this->y = $previousY;
+
+            throw new InvalidPositionException($invalidX, $invalidY);
+        }
+
+        /**
+         * If there's a crash, an exception is thrown.
+         */
         if ($at = $this->plateau->checkCrash($this)) {
-            throw new \Exception(
-                sprintf(
-                    'You crashed with another rover at %s. Now both are dead as we can not fix them.',
-                    $at
-                )
-            );
+            throw new CrashException($at);
         }
     }
 
     /**
-     * @param string $orientation
-     * @throws Exception
+     * Sets the orientation based to the "humanized" format.
+     *
+     * @param string $orientation the desired orientation
+     * @throws Exception if it was provided an invalid orientation
      */
     public function setOrientation(string $orientation): void
     {
@@ -129,7 +185,8 @@ class Rover
     }
 
     /**
-     *
+     * Turns the rover left.
+     * @return void
      */
     public function turnLeft(): void
     {
@@ -139,7 +196,8 @@ class Rover
     }
 
     /**
-     *
+     * Turns the rover right.
+     * @return void
      */
     public function turnRight(): void
     {
