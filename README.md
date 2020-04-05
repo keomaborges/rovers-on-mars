@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/keomaborges/rovers-on-mars.svg?branch=master)](https://travis-ci.org/keomaborges/rovers-on-mars)
+
 # Rovers on Mars
 A console application to solve the problem below.
 
