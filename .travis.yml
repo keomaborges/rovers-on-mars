@@ -1,3 +1,4 @@
 language: php
 php:
     - '7.4'
+script: php php/vendor/phpunit/phpunit/phpunit --configuration php/phpunit.xml.dist
