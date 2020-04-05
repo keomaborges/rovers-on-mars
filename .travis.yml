@@ -7,4 +7,4 @@ before_install: cd php
 
 before_script: composer install
 
-script: phpunit  --configuration phpunit.xml.dist
+script: php vendor/phpunit/phpunit/phpunit --configuration phpunit.xml.dist
