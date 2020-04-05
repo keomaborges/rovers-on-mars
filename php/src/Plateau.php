@@ -28,6 +28,14 @@ class Plateau
      */
     public function __construct(int $x, int $y)
     {
+        if ($x < 0) {
+            throw new \InvalidArgumentException("X must be >= 0.");
+        }
+
+        if ($y < 0) {
+            throw new \InvalidArgumentException("Y must be >= 0.");
+        }
+
         $this->x = $x;
         $this->y = $y;
         $this->rovers = [];
@@ -38,24 +46,25 @@ class Plateau
      */
     public function addRover(Rover $rover)
     {
+        foreach ($this->rovers as $currentRover) {
+            if ($currentRover === $rover) {
+                return;
+            }
+        }
+
         $this->rovers[] = $rover;
     }
 
     /**
-     * @param Rover $movingRover
+     * @param int $x
+     * @param int $y
      * @return bool|string
      */
-    public function checkCrash(Rover $movingRover)
+    public function checkCrash(int $x, int $y)
     {
         foreach ($this->rovers as $i => $rover) {
-            if (
-                $rover->getId() !== $movingRover->getId()
-                && $movingRover->getCurrentCoordinates() === $rover->getCurrentCoordinates()
-            ) {
-                $coordinates = $rover->getCurrentCoordinates();
-                $this->removeRover($movingRover);
-                unset($this->rovers[$i]);
-                return $coordinates;
+            if ($rover->getCurrentCoordinates() === "$x,$y") {
+                return $rover->getCurrentCoordinates();
             }
         }
 
@@ -80,13 +89,16 @@ class Plateau
     }
 
     /**
+     * Checks if the given position is valid. A valid position is greater
+     * or equal 0 and equal or less the size of the plateau.
+     *
      * @param int $x
      * @param int $y
      * @return bool
      */
     public function isValidPosition(int $x, int $y): bool
     {
-        return ($x <= $this->x) && ($y <= $this->y);
+        return ($x >= 0) && ($y >= 0) && ($x <= $this->x) && ($y <= $this->y);
     }
 
     /**
@@ -97,6 +109,8 @@ class Plateau
         foreach ($this->rovers as $i => $currentRover) {
             if ($currentRover->getId() === $rover->getId()) {
                 unset($this->rovers[$i]);
+                // re-indexes the array
+                $this->rovers = array_values($this->rovers);
             }
         }
     }

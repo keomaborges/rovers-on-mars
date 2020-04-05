@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Exceptions\CrashException;
+use App\Exceptions\InvalidPositionException;
+
 /**
  * Class Script
  */
@@ -38,7 +41,7 @@ class Script
 
         echo "Inform the size of the plateau (two integers separated by space): ";
 
-        $positions = explode(' ', readline());
+        $positions = explode(' ', $this->getInput());
         if (
             sizeof($positions) !== 2
             || !is_numeric($positions[0])
@@ -69,7 +72,7 @@ class Script
 
         echo 'Inform the coordinates of the rover and its orientation (e.g. 2 3 E): ';
 
-        $roverInfo = explode(' ', readline());
+        $roverInfo = explode(' ', $this->getInput());
         if (
             sizeof($roverInfo) !== 3
             || !is_numeric($roverInfo[0])
@@ -86,7 +89,7 @@ class Script
 
         try {
             $rover->setCoordinates($roverInfo[0], $roverInfo[1]);
-        } catch (\CrashException $exception) {
+        } catch (CrashException $exception) {
             $this->currentRover = null;
 
             echo "\n";
@@ -111,7 +114,6 @@ class Script
             $rover->getOrientation()
         );
 
-        $this->plateau->addRover($rover);
         $this->currentRover = $rover;
 
         $this->operateRover();
@@ -138,7 +140,7 @@ class Script
         echo '5 - Exit';
         echo "\n\n";
 
-        $option = readline();
+        $option = $this->getInput();
 
         try {
             switch ($option) {
@@ -182,7 +184,7 @@ class Script
         }
 
         echo "Inform movement instructions for the rover: ";
-        $movements = readline();
+        $movements = $this->getInput();
         foreach (str_split($movements) as $movement) {
             switch (strtoupper($movement)) {
                 case 'L':
@@ -195,19 +197,19 @@ class Script
                     try {
                         $this->currentRover->move();
                     } catch (CrashException $exception) {
-                        $this->currentRover = null;
-
                         echo "\n";
                         echo sprintf(
-                            'This rover crashed to another at %s. Now both are dead as we can not fix them.',
-                            $exception->getCoordinates()
+                            'This rover would crash to another at %s. Now it is at %s and awaiting '
+                            .'for new commands.',
+                            $exception->getCoordinates(),
+                            $this->currentRover->getCurrentCoordinates()
                         );
 
                         $this->menu();
                     } catch (InvalidPositionException $exception) {
                         echo sprintf(
                             'This rover tried to move to %s, which is an invalid position. ' .
-                            'At the moment it is at %s and will try to follow your instructions.',
+                            'At the moment it is at %s and will try to follow the next command.',
                             $exception->getInvalidCoordinates(),
                             $this->currentRover->getCurrentCoordinates()
                         );
@@ -250,5 +252,13 @@ class Script
         }
 
         $this->menu();
+    }
+
+    /**
+     * @return string
+     */
+    public function getInput()
+    {
+        return readline();
     }
 }

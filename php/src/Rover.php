@@ -58,21 +58,28 @@ class Rover
     }
 
     /**
-     * Sets the coordinates of the rover.
+     * Sets the coordinates of the rover and adds it to the plateau.
      *
      * @param int $x the position on axis X
      * @param int $y the position on axis Y
      * @throws CrashException if the rover is launched upon another one
      *                        at the same position
+     * @throws InvalidPositionException if the rover is launched to an invalid
+     *                                  position on the plateau
      */
     public function setCoordinates(int $x, int $y)
     {
-        $this->x = $x;
-        $this->y = $y;
+        if (!($at = $this->plateau->isValidPosition($x, $x))) {
+            throw new InvalidPositionException($x, $y);
+        }
 
-        if ($at = $this->plateau->checkCrash($this)) {
+        if ($at = $this->plateau->checkCrash($x, $y)) {
             throw new CrashException($at);
         }
+
+        $this->x = $x;
+        $this->y = $y;
+        $this->plateau->addRover($this);
     }
     /**
      * Returns the current coordinates
@@ -119,44 +126,40 @@ class Rover
      */
     public function move(): void
     {
-        $previousX = $this->x;
-        $previousY = $this->y;
+        $x = $this->x;
+        $y = $this->y;
 
         switch ($this->orientation) {
             case 1:
-                $this->y++;
+                $y++;
                 break;
             case 2:
-                $this->x++;
+                $x++;
                 break;
             case 3:
-                $this->y--;
+                $y--;
                 break;
             case 4:
-                $this->x--;
+                $x--;
                 break;
         }
 
         /**
-         * If the position is invalid, the rover gets back to the previous
-         * position and an exception is thrown.
+         * If the position is invalid, an exception is thrown.
          */
-        if (!($at = $this->plateau->isValidPosition($this->x, $this->y))) {
-            $invalidX = $this->x;
-            $invalidY = $this->y;
-
-            $this->x = $previousX;
-            $this->y = $previousY;
-
-            throw new InvalidPositionException($invalidX, $invalidY);
+        if (!($at = $this->plateau->isValidPosition($x, $y))) {
+            throw new InvalidPositionException($x, $y);
         }
 
         /**
          * If there's a crash, an exception is thrown.
          */
-        if ($at = $this->plateau->checkCrash($this)) {
+        if ($at = $this->plateau->checkCrash($x, $y)) {
             throw new CrashException($at);
         }
+
+        $this->x = $x;
+        $this->y = $y;
     }
 
     /**
