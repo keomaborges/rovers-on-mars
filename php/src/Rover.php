@@ -93,6 +93,8 @@ class Rover
     }
 
     /**
+     * Returns the ID of the rover.
+     *
      * @return string the current ID
      */
     public function getId(): string
@@ -101,6 +103,8 @@ class Rover
     }
 
     /**
+     * Returns the orientation of the rover.
+     *
      * @return string the "humanized" orientation
      */
     public function getOrientation(): string

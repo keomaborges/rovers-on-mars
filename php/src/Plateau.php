@@ -8,6 +8,8 @@ namespace App;
 class Plateau
 {
     /**
+     * Rovers of the plateau
+     *
      * @var Rover[]
      */
     protected array $rovers;
@@ -42,6 +44,9 @@ class Plateau
     }
 
     /**
+     * Add a rover to the plateau rovers array. If it is already on the array,
+     * nothing is processed.
+     *
      * @param Rover $rover
      */
     public function addRover(Rover $rover)
@@ -56,6 +61,8 @@ class Plateau
     }
 
     /**
+     * Check if the giver coordinates will crash to another rover on the plateau.
+     *
      * @param int $x
      * @param int $y
      * @return bool|string
@@ -72,6 +79,8 @@ class Plateau
     }
 
     /**
+     * Get the rovers on the plateau.
+     *
      * @return array
      */
     public function getRovers(): array
@@ -80,6 +89,8 @@ class Plateau
     }
 
     /**
+     * Returns the size of the plateau.
+     *
      * @param string $separator
      * @return string
      */
@@ -102,6 +113,8 @@ class Plateau
     }
 
     /**
+     * Remove a rover from the array and re-index it.
+     *
      * @param Rover $rover
      */
     public function removeRover(Rover $rover)

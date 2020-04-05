@@ -120,6 +120,14 @@ class Script
     }
 
     /**
+     * @return string
+     */
+    public function getInput()
+    {
+        return readline();
+    }
+
+    /**
      *
      */
     public function menu()
@@ -200,7 +208,7 @@ class Script
                         echo "\n";
                         echo sprintf(
                             'This rover would crash to another at %s. Now it is at %s and awaiting '
-                            .'for new commands.',
+                            . 'for new commands.',
                             $exception->getCoordinates(),
                             $this->currentRover->getCurrentCoordinates()
                         );
@@ -252,13 +260,5 @@ class Script
         }
 
         $this->menu();
-    }
-
-    /**
-     * @return string
-     */
-    public function getInput()
-    {
-        return readline();
     }
 }
