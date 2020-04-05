@@ -3,4 +3,4 @@ language: php
 php:
     - 7.4
 
-script: phpunit  --configuration phpunit.xml.dist
+script: phpunit  --configuration php/phpunit.xml.dist
